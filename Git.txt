@@ -1,4 +1,4 @@
-添加全部内容到暂存区
+﻿添加全部内容到暂存区
 git add .
 
 提交文件
@@ -15,3 +15,19 @@ git fetch
 
 切换到远程分支
 git checkout origin/master
+
+# Git
+    拉取
+    git pull
+
+    添加文件
+    git add .
+
+    添加到缓存区 XXX = 名
+    git commit -m "XXX"
+
+    提交到主线 master
+    git push -u origin master
+
+    放弃本地修改
+    git reset --hard origin/master
