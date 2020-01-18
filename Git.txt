@@ -1,0 +1,17 @@
+添加全部内容到暂存区
+git add .
+
+提交文件
+git commit
+
+查询文件状态
+git status
+
+查看分支
+git branch -a
+
+获取所有分支
+git fetch
+
+切换到远程分支
+git checkout origin/master

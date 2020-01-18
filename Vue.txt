@@ -1,0 +1,15 @@
+# 安装
+    全局安装vue
+    npm install -g @vue/cli
+
+    创建项目
+    vue create my-project
+
+    安装项目
+    npm install
+
+    打包
+    npm run build
+
+    启动vue项目
+    npm run serve

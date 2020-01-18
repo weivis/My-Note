@@ -1,0 +1,126 @@
+# Pip
+    生成需求文档
+    pip freeze >requirements.txt
+
+# 搜索当天的数据
+    数据库表需要加一个字段
+    db.Column(db.DateTime)
+    获取当前时间和过滤今天的条件
+        nowtime = datetime.now()
+        db.cast(UserRecord.date, db.DATE) == nowtime.date()
+        UserRecord.query.filter(openid == openid and db.cast(UserRecord.date, db.DATE) == nowtime.date()).first()
+
+# Sqlalchemy
+    分页
+    分页方法, page_size = 一共分多少页, page_index = 要获取第几页
+    .paginate(page_index, per_page=page_size)
+
+    获取分页的对象结果
+    data.items
+
+    总页数
+    data.pages
+
+    排序, XXX = 被排序的对象, 在后面加.desc()倒序//.order_by(Ocr_Record.date.desc())
+    .order_by(XXX)
+
+    提交事务回滚
+    try:
+        pass
+    except:
+        db.session.rollback()
+    其他
+    获取全部结果数量
+    .count()
+
+    创建一个查询集
+    查询集 = Ocr_Record.query.filter() or .order_by()
+
+    根据某个字段去重分组
+    表对象.query.filter().with_entities(表对象.字段).distinct().order_by(表对象.字段)
+
+    搜索
+    查询集.filter(or_(表对象.字段.contains(str(需要搜索的值))))
+
+    多字段搜索
+    查询集.filter(or_(表对象.字段.contains(str(需要搜索的值)), 表对象.字段.contains(str(需要搜索的值))))
+
+    基于年龄值的搜索(age)
+        文本内包含这个出生日期的
+        born_year = str(datetime.now().year - int(age))
+        querys = querys.filter(Passport_Data.qw.startswith(born_year))
+
+        值 = 这个出生日期的
+        born_year = datetime.now().year - int(age)
+        querys = querys.filter(Passport_Data.qw == born_year)
+
+# Flask_migrate
+    提供数据库升级管理等功能
+    from flask_migrate import Migrate, MigrateCommand
+    from flask_script import Manager, Server
+
+    app = Flask(__name__)
+    db = SQLAlchemy(app)
+    manager = Manager(app)
+    migrate = Migrate(app, db)
+
+    manager.add_command('db', MigrateCommand)
+    manager.add_command("runserver", Server(use_debugger=True, host=RUNIP, port=RUNPORT, threaded=True))
+
+# Flask _script
+    快速执行脚本
+    from flask_script import Manager, Server
+
+    app = Flask(__name__)
+    manager = Manager(app)
+
+    @manager.option('-n', '-name', dest='name')
+    @manager.option('-e', '-email', dest='email')
+    @manager.option('-p', '-password', dest='password')
+
+    def create_admin(name, email ,password):
+        if not all([name,email,password]):
+        print('参数不齐全')
+    else:
+        Admin_Account(username=name, password=password, useremail=email)
+        print('成功创建管理员 : ', name)
+    python app.py create_admin -n 用户名 -e 登录邮箱 -p 密码
+
+# 常用代码块
+
+    序列化器
+    def serialize(models):
+        cache = []
+        for model in models:
+            li = []
+            dicts = {}
+            from sqlalchemy.orm import class_mapper
+            columns = [c.key for c in class_mapper(model.__class__).columns]
+
+            for c in columns:
+                
+                try:
+                    cc = eval(getattr(model, c))
+                    if isinstance(cc, dict):
+                        li.append((c,cc))
+
+                    if isinstance(cc, list):
+                        li.append((c,cc))
+
+                except:
+
+                    if type(getattr(model, c)) == datetime.datetime:
+                        li.append((c, DateTimeForStr(getattr(model, c))))
+
+                    elif type(getattr(model, c)) == datetime.date:
+                        li.append((c, DateForStr(getattr(model, c))))
+
+                    else:
+                        li.append((c, getattr(model, c)))
+
+            for s in li:
+                dicts.update(dict([s]))
+
+            cache.append(dicts)
+
+        return cache

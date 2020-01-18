@@ -1,0 +1,63 @@
+# 系统命令
+    删除
+    rm -r [filename]
+
+    复制
+    cp [filename] [dirpath]
+
+# Git
+    拉取
+    git pull
+
+    添加文件
+    git add .
+
+    添加到缓存区 XXX = 名
+    git commit -m "XXX"
+
+    提交到主线 master
+    git push -u origin master
+
+    放弃本地修改
+    git reset --hard origin/master
+
+# Vim
+    打开文件 XXX文件名
+    vim XXX
+
+    滑动到最底部
+    shift + g
+
+    刷新当前文件内容
+    shift + e
+
+    插入
+    i
+
+    插入完成后按esc确认
+    esc
+
+    保存文件
+    w
+
+    退出
+    q
+
+# SuperVisor
+    重启uwsgi进程, XXX = uwsig进程名
+    sudo supervisorctl restart XXX
+
+# Ubantu Virtualenv
+    进入虚拟环境 XXX环境名
+    workon XXX
+
+    创建虚拟环境 XXX环境名
+    mkvirtualenv XXX
+
+# Lixun功能开启
+    开启ssh连接服务器
+    service sshd restart
+
+# Nginx
+    重新加载配置文件
+    nginx -s reload
