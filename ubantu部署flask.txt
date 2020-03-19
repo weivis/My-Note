@@ -1,0 +1,173 @@
+1.
+确认pip版本
+    pip -V
+    pip3 -V
+
+2.指定pip3
+    sudo  alias pip='pip3'
+    可以alias pip='pip3'
+
+3.指定pip3后
+    pip install virtualenv
+
+4.安装nginx
+    sudo apt-get install nginx
+    2.进行nginx的安装成功与否的测试，默认是80端口，本机IP是127.0.0.1
+    /etc/init.d/nginx start --启动
+    /etc/init.d/nginx stop --关闭
+    /etc/init.d/nginx restart --重新启动
+
+5.从git拉取项目
+    git clone
+    没有先安装 apt install git
+
+6.安装mysql
+    sudo apt-get update
+    sudo apt-get install mysql-server mysql-client
+    sudo service mysql restart
+    mysql -uroot -p
+
+7.ubuntu virtualenv虚拟环境搭建
+ubuntu虚拟环境搭建
+    1、虚拟环境的安装
+    sudo pip install virtualenv
+    2、安装虚拟环境的扩展包
+    sudo pip install virtualenvwrapper
+    3、编辑家目录下面的bashrc文件，末尾添加
+    vi .bashrc(从home目录进入bashrc文件)
+    export WORKON_HOME=$HOME.virtualenvs
+    source /usr/local/bin/.vitualenvwrapper.sh
+    source .bashrc 运行一下
+    4.virtualenv创建虚拟环境
+    mkvirtualenv -p python3 aa(创建名称为aa的虚拟环境，使用python3环境)
+
+    1）注意：创建的过程中报错,无法使用使用python3环境
+    Running virtualenv with interpreter /usr/bin/python3.6
+    Traceback (most recent call last):
+    File "/usr/local/lib/python2.7/dist-packages/virtualenv.py", line 22, in
+    import distutils.spawn
+    ModuleNotFoundError: No module named 'distutils.spawn'
+    2）解决方式(缺少distutils.spawn)，安装distutils
+
+    sudo apt-get install python-distutils
+    4.创建的环境位于home目录.virtualenvs文件夹内
+    4、退出虚拟环境
+    deactivate
+    5、进入虚拟环境
+    workon 虚拟环境名称
+    6、删除虚拟环境
+    rmvitualenv 虚拟环境名称
+
+8.uwsgi
+    pip install uwsgi
+    在项目的目录创建一个uwsgi的配置文件
+    [uwsgi]
+    #配合nginx使用
+    socket = 127.0.0.1:8000
+    #项目路径 /自己项目路径/flask_test
+    chdir = 自己项目路径
+    #wsgi文件 run就是flask启动文件去掉后缀名 app是run.py里面的Flask对象 
+    module = run:app
+    #指定工作进程
+    processes = 4
+    #主进程
+    master = true
+    #每个工作进程有2个线程
+    threads = 2
+    #指的后台启动 日志输出的地方
+    daemonize = uwsgi.log
+    #保存主进程的进程号
+    pidfile = uwsgi.pid
+    #虚拟环境环境路径（在root下的.virtualenvs下查看）
+    virtualenv = /虚拟环境路径/flask_test
+
+9.启动uWSGI
+    uwsgi --ini uwsgi.ini 
+    启动Nginx（nginx是已经搭好的，直接nginx启动即可）
+    然后访问Nginx监听的IP，由于我在本地部署，就直接访问http://127.0.0.1:80/
+    其他命令
+    uwsgi重启
+    uwsgi --reload uwsgi.pid 
+    uwsgi停止
+    uwsgi --stop uwsgi.pid 
+    
+# ------------------------------------------------------------------
+
+uwsgi 配置
+其实nginx+python+django的配置主要是uwsgi的配置。这里直接贴出我的uwsgi.ini的配置。各个参数具体参看uwsgi文档。
+
+[uwsgi]
+#socket = 127.0.0.1:8000 
+socket = /tmp/uwsgi.sock
+master = true
+chdir = /home/lovedboy/myproject/ # django工程目录
+wsgi-file = /home/lovedboy/myproject/myapp/wsgi.py
+processes = 2
+listen = 15000
+enable-threads = true
+daemonize = /home/lovedboy/uwsgi/uwsgi.log
+pidfile = /home/lovedboy/uwsgi/uwsgi.pid
+pythonpath = /home/lovedboy/myproject/
+buffer-size =  32768
+reload-mercy = 8
+vacuum = true
+max-requests = 20000
+socket-timeout = 20
+harakiri = 20
+memory-report = true
+
+配置完成后，直接用如下命令启动:
+
+sudo uwsgi --ini uwsgi.ini
+
+如果启动成功， tail 一下uwsgi.log 会有类似如下的日志：
+
+*** Starting uWSGI 1.9.11 (32bit) on [Tue Dec 24 19:05:44 2013] ***
+compiled with version: 4.7.2 on 29 May 2013 19:25:05
+os: Linux-3.5.0-25-generic #39-Ubuntu SMP Mon Feb 25 19:02:34 UTC 2013
+nodename: lovedboy 
+machine: i686
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/lovedboy/uwsgi
+detected binary path: /usr/local/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+your processes number limit is 31974
+your memory page size is 4096 bytes
+detected max file descriptor number: 65536
+lock engine: pthread robust mutexes
+uwsgi socket 0 inherited UNIX address /tmp/uwsgi.sock fd 3
+Python version: 2.7.3 (default, Apr 10 2013, 05:13:00)  [GCC 4.7.2]
+Python main interpreter initialized at 0x9fa20f8
+python threads support enabled
+your server socket listen backlog is limited to 10000 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 277932 bytes (271 KB) for 2 cores
+*** Operational MODE: preforking ***
+added /home/lovedboy/myproject/ to pythonpath.
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x9fa20f8 pid: 30509 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+gracefully (RE)spawned uWSGI master process (pid: 30509)
+spawned uWSGI worker 1 (pid: 30540, cores: 1)
+spawned uWSGI worker 2 (pid: 30541, cores: 1)
+
+停掉uwsgi 服务:
+
+sudo uwsgi --stop  uwsgi.pid
+
+平滑重启:
+
+sudo uwsgi --reload uwsgi.pid
+
+nginx 配置
+location / { 
+	include        uwsgi_params;
+	#uwsgi_pass     127.0.0.1:8888;
+	uwsgi_pass     unix:///tmp/uwsgi.sock;
+	uwsgi_read_timeout 1000;
+}   
+
+nginx 配置更改后，重启nginx。
+sudo nginx -s reload
