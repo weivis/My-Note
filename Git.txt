@@ -31,3 +31,18 @@ git checkout origin/master
 
     放弃本地修改
     git reset --hard origin/master
+
+# -------------------------------------------
+
+查看所有分支
+git branch
+
+切换仓库地址
+git remote rm origin
+git remote add origin https://github.com/weivis/illyaSupportCom.git
+
+拉取分支
+git pull origin master
+
+设置主分支
+git branch --set-upstream-to=origin/master master
